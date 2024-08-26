@@ -17,7 +17,8 @@ final TextEditingController usernameController = TextEditingController();
 void signUp(BuildContext context) async {
   try {
     final AuthService authService = AuthService();
-    await authService.signUp(emailController.text, passwordController.text);
+    await authService.signUp(
+        emailController.text, passwordController.text, usernameController.text);
     reset();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const MainPage()));
@@ -26,8 +27,7 @@ void signUp(BuildContext context) async {
   }
 }
 
-
-void reset(){
+void reset() {
   emailController.text = "";
   passwordController.text = "";
   usernameController.text = "";

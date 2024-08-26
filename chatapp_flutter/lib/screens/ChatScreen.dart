@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:chatapp_flutter/widgets/common/ChatDialog.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String receiverUsername;
+  const ChatScreen({super.key, required this.receiverUsername});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -20,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: Colors.black,
           iconTheme: IconThemeData(color: Colors.white),
           title: Text(
-            "Aayush Pandey",
+            widget.receiverUsername,
             style: TextStyle(
               fontSize: 20,
               color: Colors.yellow,

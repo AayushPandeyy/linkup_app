@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatCard extends StatelessWidget {
-  const ChatCard({super.key});
+  final String username;
+  const ChatCard({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -13,30 +14,30 @@ class ChatCard extends StatelessWidget {
           border: Border.symmetric(
               horizontal:
                   BorderSide(color: Color.fromARGB(255, 222, 217, 217)))),
-      child: const Padding(
-        padding: EdgeInsets.all(15.0),
+      child:  Padding(
+        padding: const EdgeInsets.all(15.0),
         child: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 25,
               foregroundImage: NetworkImage(
                   "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg"),
             ),
-            SizedBox(
+            const SizedBox(
               width: 20,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Aayush Pandey",
-                  style: TextStyle(
+                  username,
+                  style: const TextStyle(
                       fontFamily: "Gabarito",
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                       color: Colors.yellow),
                 ),
-                Text(
+                const Text(
                   "hya nai aja ta hudaina hai yo kura..voli garamla",
                   style: TextStyle(
                       fontFamily: "Gabarito",

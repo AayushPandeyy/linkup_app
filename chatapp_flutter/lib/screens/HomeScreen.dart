@@ -1,5 +1,7 @@
 import 'package:chatapp_flutter/screens/ChatScreen.dart';
+import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:chatapp_flutter/widgets/homeScreen/ChatCard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,8 +12,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final User currUser = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
+    final ChatService chatService = ChatService();
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -26,19 +30,36 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             body: Container(
                 height: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const ChatScreen()));
-                          },
-                          child: const ChatCard(),
-                        )
-                    ],
-                  ),
+                child: StreamBuilder(
+                  stream: chatService.getUsers(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text("Loading...");
+                    }
+
+                    return ListView(
+                      children: snapshot.data!
+                          .map((data) => DisplayUserWidget(data, context))
+                          .toList(),
+                    );
+                  },
                 ))));
+  }
+
+  Widget DisplayUserWidget(Map<String, dynamic> data, BuildContext context) {
+    if (data["email"] != currUser.email) {
+      return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                          receiverUsername: data["username"],
+                        )));
+          },
+          child: ChatCard(username: data["username"]));
+    } else {
+      return Container();
+    }
   }
 }
