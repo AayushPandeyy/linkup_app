@@ -1,3 +1,4 @@
+import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/widgets/homeScreen/ChatCard.dart';
 import 'package:flutter/material.dart';
 
@@ -28,10 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ChatCard(),
-                      ChatCard(),
-                      ChatCard(),
-                      ChatCard(),
+                      for (int i = 0; i < 10; i++)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const ChatScreen()));
+                          },
+                          child: ChatCard(),
+                        )
                     ],
                   ),
                 ))));
