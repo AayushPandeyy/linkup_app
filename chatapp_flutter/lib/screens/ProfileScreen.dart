@@ -1,4 +1,5 @@
 import 'package:chatapp_flutter/screens/auth/SignInScreen.dart';
+import 'package:chatapp_flutter/services/AuthService.dart';
 import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Center(
         child: CustomButton(
             text: "Sign Out",
-            onPress: () {
+            onPress: () async {
+              final AuthService authService = AuthService();
+              await authService.logout();
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

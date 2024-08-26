@@ -1,4 +1,5 @@
 import 'package:chatapp_flutter/screens/MainPage.dart';
+import 'package:chatapp_flutter/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,11 +10,32 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+final TextEditingController emailController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
+final TextEditingController usernameController = TextEditingController();
+
+void signUp(BuildContext context) async {
+  try {
+    final AuthService authService = AuthService();
+    await authService.signUp(emailController.text, passwordController.text);
+    reset();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const MainPage()));
+  } catch (err) {
+    print(err);
+  }
+}
+
+
+void reset(){
+  emailController.text = "";
+  passwordController.text = "";
+  usernameController.text = "";
+}
+
 class _RegisterScreenState extends State<RegisterScreen> {
   bool obscure = true;
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () {
-                    
+                    signUp(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -112,9 +134,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     shadowColor: Colors.black,
                     elevation: 5,
                   ),
-                  child: Text(
+                  child: const Text(
                     "Register",
-                    style: const TextStyle(fontSize: 18.0, color: Colors.black),
+                    style: TextStyle(fontSize: 18.0, color: Colors.black),
                   ),
                 ),
                 const SizedBox(height: 20.0),

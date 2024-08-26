@@ -15,14 +15,22 @@ class SignInScreen extends StatefulWidget {
 final TextEditingController _emailController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 
-void login() async {
+void login(BuildContext context) async {
   try {
-    final AuthService authService = AuthService();
+    final authService = AuthService();
 
     await authService.signIn(_emailController.text, _passwordController.text);
+    reset();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const MainPage()));
   } catch (e) {
     print(e);
   }
+}
+
+void reset() {
+  _emailController.text = "";
+  _passwordController.text = "";
 }
 
 class _SignInScreenState extends State<SignInScreen> {
@@ -119,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: () async {
-                      login();
+                      login(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
