@@ -1,0 +1,31 @@
+import 'package:chatapp_flutter/screens/auth/SignInScreen.dart';
+import 'package:chatapp_flutter/services/AuthService.dart';
+import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
+import 'package:flutter/material.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: Scaffold(
+      body: Center(
+        child: CustomButton(
+            text: "Sign Out",
+            onPress: () {
+              AuthService().logout();
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SignInScreen()));
+            }),
+      ),
+    ));
+  }
+}
