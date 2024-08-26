@@ -107,10 +107,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return data['senderId'] == auth.currentUser!.uid
         ? ChatDialog(
+            isSentByMe: true,
             color: Colors.green,
             direction: TextDirection.rtl,
             message: data['message'])
         : ChatDialog(
+            isSentByMe: false,
             color: Colors.grey,
             direction: TextDirection.ltr,
             message: data['message']);
