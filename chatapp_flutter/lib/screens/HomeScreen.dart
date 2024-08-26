@@ -55,6 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(
                     builder: (context) => ChatScreen(
                           receiverUsername: data["username"],
+                          receiverEmail: data["email"],
+                          receiverId: data["uid"],
                         )));
           },
           child: ChatCard(username: data["username"]));
