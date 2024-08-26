@@ -1,12 +1,8 @@
-import 'package:chatapp_flutter/providers/AuthProvider.dart';
-import 'package:chatapp_flutter/screens/SplashScreen.dart';
+import 'package:chatapp_flutter/screens/auth/SignInScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +32,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: const SignInScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

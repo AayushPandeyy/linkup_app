@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: Text(
+              title: const Text(
                 "Chat App",
                 style: TextStyle(
                   fontSize: 30,
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const ChatScreen()));
                           },
-                          child: ChatCard(),
+                          child: const ChatCard(),
                         )
                     ],
                   ),

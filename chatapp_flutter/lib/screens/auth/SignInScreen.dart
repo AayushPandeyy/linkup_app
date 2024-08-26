@@ -1,4 +1,3 @@
-import 'package:chatapp_flutter/providers/AuthProvider.dart';
 import 'package:chatapp_flutter/screens/MainPage.dart';
 import 'package:chatapp_flutter/screens/auth/RegisterScreen.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: Colors.black, // Background color
       body: Container(
@@ -108,17 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: () async {
-                      await authProvider.login(
-                          _emailController.text, _passwordController.text);
-                      print(authProvider.errorMessage);
-                      if (authProvider.errorMessage == "Authenticated") {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const MainPage()));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                Text(authProvider.errorMessage.toString())));
-                      }
+                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
@@ -131,7 +119,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       elevation: 5,
                     ),
                     child: Text(
-                      authProvider.isLoading ? "Logging In.." : "Log In",
+                      "Login",
                       style:
                           const TextStyle(fontSize: 18.0, color: Colors.pink),
                     ),

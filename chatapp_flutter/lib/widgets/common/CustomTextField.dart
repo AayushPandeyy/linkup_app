@@ -1,11 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final VoidCallback? onChanged;
-  final VoidCallback? onClear;
-  const CustomTextField({super.key, this.controller, this.onChanged,this.onClear});
+  final String placeholder;
+  const CustomTextField(
+      {super.key, this.controller, this.onChanged, required this.placeholder});
 
   @override
   Widget build(BuildContext context) {
@@ -14,20 +14,22 @@ class CustomTextField extends StatelessWidget {
         controller!.text = value;
         onChanged!();
       },
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       controller: controller,
       maxLines: 1,
       decoration: InputDecoration(
+        hintText: placeholder,
+        hintStyle: const TextStyle(color: Colors.grey),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.pink,
             width: 2.0,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.grey,
             width: 1.5,
           ),
@@ -45,7 +47,6 @@ class CustomTextField extends StatelessWidget {
           ),
           onPressed: () {
             controller!.text = "";
-            onClear!();
           },
         ),
       ),

@@ -8,13 +8,13 @@ class ChatCard extends StatelessWidget {
     return Container(
       width: double.maxFinite,
       // height: 80,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Color.fromARGB(255, 0, 0, 0),
           border: Border.symmetric(
               horizontal:
-                  BorderSide(color: const Color.fromARGB(255, 222, 217, 217)))),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+                  BorderSide(color: Color.fromARGB(255, 222, 217, 217)))),
+      child: const Padding(
+        padding: EdgeInsets.all(15.0),
         child: Row(
           children: [
             CircleAvatar(

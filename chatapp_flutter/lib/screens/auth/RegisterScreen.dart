@@ -1,4 +1,3 @@
-import 'package:chatapp_flutter/providers/AuthProvider.dart';
 import 'package:chatapp_flutter/screens/MainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController usernameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: Colors.black, // Background color
       body: Container(
@@ -102,15 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () {
-                    try {
-                      authProvider.register(emailController.text,
-                          usernameController.text, passwordController.text);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const MainPage()));
-                    } catch (err) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: const Text("Error")));
-                    }
+                    
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -123,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     elevation: 5,
                   ),
                   child: Text(
-                    authProvider.isLoading ? "Registering..." : 'Register',
+                    "Register",
                     style: const TextStyle(fontSize: 18.0, color: Colors.black),
                   ),
                 ),
