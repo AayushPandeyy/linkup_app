@@ -1,5 +1,6 @@
 import 'package:chatapp_flutter/screens/MainPage.dart';
 import 'package:chatapp_flutter/screens/auth/RegisterScreen.dart';
+import 'package:chatapp_flutter/services/AuthService.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -11,10 +12,22 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
+final TextEditingController _emailController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
+
+void login() async {
+  try {
+    final AuthService authService = AuthService();
+
+    await authService.signIn(_emailController.text, _passwordController.text);
+  } catch (e) {
+    print(e);
+  }
+}
+
 class _SignInScreenState extends State<SignInScreen> {
   bool obscure = true;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +119,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 20.0),
                   ElevatedButton(
                     onPressed: () async {
-                      
+                      login();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
@@ -118,10 +131,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       shadowColor: Colors.black,
                       elevation: 5,
                     ),
-                    child: Text(
+                    child: const Text(
                       "Login",
-                      style:
-                          const TextStyle(fontSize: 18.0, color: Colors.pink),
+                      style: TextStyle(fontSize: 18.0, color: Colors.pink),
                     ),
                   ),
                   const SizedBox(

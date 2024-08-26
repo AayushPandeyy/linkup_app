@@ -38,6 +38,8 @@ dependencies:
   provider: ^6.1.2
   http: ^1.2.2
   encrypt:
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
 
 dev_dependencies:
   flutter_test:
