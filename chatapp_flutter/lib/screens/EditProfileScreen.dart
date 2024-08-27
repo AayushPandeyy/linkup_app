@@ -107,7 +107,7 @@ class EditProfileScreen extends StatelessWidget {
                           ),
                           child: const Text(
                             'Save',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                         ),
                         OutlinedButton(
