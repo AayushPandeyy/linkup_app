@@ -11,7 +11,6 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       onChanged: (value) {
-        controller!.text = value;
         onChanged!();
       },
       style: const TextStyle(color: Colors.white),
