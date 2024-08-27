@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
             appBar: AppBar(
               title: const Text(
-                "Chat App",
+                "LinkUp",
                 style: TextStyle(
                   fontSize: 30,
                   fontFamily: "AldotheApache",
@@ -29,12 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 4,
             ),
             body: Container(
+                margin: EdgeInsets.only(top: 1),
                 height: double.maxFinite,
                 child: StreamBuilder(
                   stream: chatService.getUsers(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading...");
+                      return Center(child: CircularProgressIndicator());
                     }
 
                     return ListView(

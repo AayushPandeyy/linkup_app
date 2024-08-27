@@ -70,10 +70,10 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(height: 10.0),
                   Text(
-                    'Chat App',
+                    'LinkUp',
                     style: TextStyle(
-                      fontFamily: "SpaceGrotesk",
-                      color: Colors.pink,
+                      fontFamily: "AldotheApache",
+                      color: Colors.yellow,
                       fontSize: 36.0,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2.0,
@@ -141,7 +141,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     child: const Text(
                       "Login",
-                      style: TextStyle(fontSize: 18.0, color: Colors.pink),
+                      style: TextStyle(fontSize: 18.0, color: Colors.red),
                     ),
                   ),
                   const SizedBox(
@@ -164,7 +164,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       child: const Text(
                         'Register',
-                        style: TextStyle(fontSize: 18.0, color: Colors.pink),
+                        style: TextStyle(fontSize: 18.0, color: Colors.red),
                       )),
                 ],
               ),

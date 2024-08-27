@@ -19,6 +19,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final FocusNode myFocus = FocusNode();
   final TextEditingController _controller = TextEditingController();
 
   final chatService = ChatService();
@@ -28,6 +29,38 @@ class _ChatScreenState extends State<ChatScreen> {
       chatService.sendMessage(widget.receiverId, _controller.text);
 
       _controller.text = "";
+
+      scrollDown();
+    }
+  }
+
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    myFocus.addListener(() {
+      if (myFocus.hasFocus) {
+        Future.delayed(const Duration(seconds: 1), () => scrollDown());
+      }
+    });
+    Future.delayed(const Duration(milliseconds: 1000), () => scrollDown());
+  }
+
+  @override
+  void dispose() {
+    myFocus.dispose();
+    _controller.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  void scrollDown() {
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(
+        scrollController.position.maxScrollExtent,
+      );
     }
   }
 
@@ -50,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -61,39 +94,40 @@ class _ChatScreenState extends State<ChatScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text("Loading...");
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         return ListView(
+                          controller: scrollController,
                           children: snapshot.data!.docs
                               .map((doc) => DisplayMessageWidget(doc))
                               .toList(),
                         );
                       })),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        decoration: InputDecoration(
-                          hintText: "Type your message...",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      focusNode: myFocus,
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: "Type your message...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.send, color: Colors.red),
-                      onPressed: () {
-                        // Handle sending message
-                        sendMessage();
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send, color: Colors.red),
+                    onPressed: () {
+                      // Handle sending message
+                      sendMessage();
+                    },
+                  ),
+                ],
               ),
             ],
           ),

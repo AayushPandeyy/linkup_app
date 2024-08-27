@@ -52,4 +52,18 @@ class ChatService {
         .orderBy("timestamp")
         .snapshots();
   }
+
+  Stream<List<Map<String, dynamic>>> searchUsers(String query) {
+    return firestore
+        .collection('Users')
+        .where('username', isGreaterThanOrEqualTo: query)
+        .where('username', isLessThanOrEqualTo: query + '\uf8ff')
+        .snapshots()
+        .map((snapshot) {
+      // Convert the documents to a list of maps
+      return snapshot.docs.map((doc) {
+        return doc.data();
+      }).toList();
+    });
+  }
 }
