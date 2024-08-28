@@ -13,6 +13,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final User currUser = FirebaseAuth.instance.currentUser!;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("Logged in user is :${currUser.email}");
+  }
+
   @override
   Widget build(BuildContext context) {
     final ChatService chatService = ChatService();

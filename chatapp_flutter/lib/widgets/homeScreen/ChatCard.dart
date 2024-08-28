@@ -7,10 +7,10 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:100,
+      width: 100,
       // height: 80,
       decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 0, 0, 0),
+          color: Colors.blueAccent,
           border: Border.symmetric(
               horizontal:
                   BorderSide(color: Color.fromARGB(255, 222, 217, 217)))),

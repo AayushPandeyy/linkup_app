@@ -1,3 +1,6 @@
+import 'package:chatapp_flutter/screens/ProfileScreen.dart';
+import 'package:chatapp_flutter/services/FirestoreService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -5,6 +8,7 @@ class EditProfileScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final User currUser = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
@@ -15,127 +19,154 @@ class EditProfileScreen extends StatelessWidget {
           backgroundColor: Colors.green,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 200,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 225, 231, 225),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(50),
-                        bottomRight: Radius.circular(50),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 100,
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.white,
-                      child: CircleAvatar(
-                        radius: 55,
-                        backgroundImage: NetworkImage(
-                          "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg", // Replace with actual profile picture URL
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 160,
-                    right: MediaQuery.of(context).size.width / 2 - 40,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        // Implement profile picture change functionality
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 80),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+        body: StreamBuilder(
+            stream: Firestoreservice().getUserDataByEmail(currUser.email!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No data found'));
+              }
+
+              // Assuming there's only one user with this email
+              var userData = snapshot.data!.first;
+
+              usernameController.text = userData["username"];
+              emailController.text = userData["email"];
+              bioController.text =
+                  userData["bio"] == null ? "" : userData["bio"];
+              phoneController.text =
+                  userData["phone"] == null ? "" : userData["phone"];
+              return SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildTextField(
-                      label: 'Username',
-                      controller: usernameController,
-                      icon: Icons.person,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: 'Email',
-                      controller: emailController,
-                      icon: Icons.email,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: 'Bio',
-                      controller: bioController,
-                      icon: Icons.info,
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      label: 'Phone Number',
-                      controller: phoneController,
-                      icon: Icons.phone,
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    Stack(
+                      alignment: Alignment.center,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // Implement save functionality
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                        Container(
+                          height: 200,
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 225, 231, 225),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(50),
+                              bottomRight: Radius.circular(50),
                             ),
-                          ),
-                          child: const Text(
-                            'Save',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
                           ),
                         ),
-                        OutlinedButton(
-                          onPressed: () {
-                            // Implement cancel functionality
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                        Positioned(
+                          top: 100,
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            child: CircleAvatar(
+                              radius: 55,
+                              backgroundImage: NetworkImage(
+                                "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg", // Replace with actual profile picture URL
+                              ),
                             ),
-                            side:
-                                const BorderSide(color: Colors.green, width: 2),
                           ),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(fontSize: 18, color: Colors.green),
+                        ),
+                        Positioned(
+                          top: 160,
+                          right: MediaQuery.of(context).size.width / 2 - 40,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              // Implement profile picture change functionality
+                            },
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 80),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          _buildTextField(
+                            label: 'Username',
+                            controller: usernameController,
+                            icon: Icons.person,
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            label: 'Email',
+                            controller: emailController,
+                            icon: Icons.email,
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            label: 'Bio',
+                            controller: bioController,
+                            icon: Icons.info,
+                            maxLines: 3,
+                          ),
+                          const SizedBox(height: 20),
+                          _buildTextField(
+                            label: 'Phone Number',
+                            controller: phoneController,
+                            icon: Icons.phone,
+                          ),
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Implement save functionality
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Save',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                              ),
+                              OutlinedButton(
+                                onPressed: () {
+                                  // Implement cancel functionality
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  side: const BorderSide(
+                                      color: Colors.green, width: 2),
+                                ),
+                                child: const Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.green),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
+              );
+            }),
       ),
     );
   }

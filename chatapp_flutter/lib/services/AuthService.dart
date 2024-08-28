@@ -11,7 +11,7 @@ class AuthService {
     try {
       UserCredential user = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-          
+
       return user;
     } on FirebaseAuthException catch (err) {
       print(err);
@@ -21,7 +21,7 @@ class AuthService {
 
   //signUp
 
-  Future<UserCredential> signUp(String email, String password,username) async {
+  Future<UserCredential> signUp(String email, String password, username) async {
     try {
       UserCredential user = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -30,12 +30,10 @@ class AuthService {
         password: password,
       );
 
-      firestore.collection("Users").doc(user.user!.uid).set({
-            'uid':user.user!.uid,
-            "email":email,
-            "username":username
-
-    });
+      firestore
+          .collection("Users")
+          .doc(user.user!.uid)
+          .set({'uid': user.user!.uid, "email": email, "username": username});
 
       return user;
     } on FirebaseAuthException catch (err) {
@@ -47,6 +45,10 @@ class AuthService {
   //logout
 
   Future<void> logout() async {
-    return await auth.signOut();
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      throw Exception('Logout failed: $e');
+    }
   }
 }

@@ -15,9 +15,9 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-final User currUser = FirebaseAuth.instance.currentUser!;
 
 class _ProfileScreenState extends State<ProfileScreen> {
+final User currUser = FirebaseAuth.instance.currentUser!;
   @override
   void initState() {
     super.initState();
@@ -123,13 +123,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       text: "Sign Out",
                       onPress: () async {
                         final AuthService authService = AuthService();
-                        await authService.logout();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignInScreen(),
-                          ),
-                        );
+                        try {
+                          // Perform sign out
+                          await authService.logout();
+
+                          // Navigate to SignInScreen and replace the current screen
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignInScreen(),
+                            ),
+                          );
+                        } catch (e) {
+                          // Handle any errors during sign out
+                          print('Sign out failed: $e');
+                          // Optionally show an error message to the user here
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Sign out failed. Please try again.'),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],
