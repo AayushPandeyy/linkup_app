@@ -77,11 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (snapshot.hasData && snapshot.data != null) {
             Map<String, dynamic>? messageData = snapshot.data!.data();
             if (messageData != null && messageData.containsKey('message')) {
-              latestMessage =
-                  messageData['message']; 
+              latestMessage = messageData['message'];
 
-                  
-                  // Display the latest message
+              // Display the latest message
             }
           }
           if (data["email"] != currUser.email) {
@@ -99,6 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               child: ChatCard(
+                profilePictureUrl: data["profilePicture"] ??
+                    "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
                 username: data["username"],
                 latestMessage:
                     latestMessage, // Pass the latest message to the ChatCard

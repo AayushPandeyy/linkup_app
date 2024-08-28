@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class ChatCard extends StatelessWidget {
   final String username;
   final String latestMessage;
+  final String profilePictureUrl;
   const ChatCard(
-      {super.key, required this.username, required this.latestMessage});
+      {super.key, required this.username, required this.latestMessage, required this.profilePictureUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +21,10 @@ class ChatCard extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: Row(
           children: [
-            const CircleAvatar(
+             CircleAvatar(
               radius: 25,
               foregroundImage: NetworkImage(
-                  "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg"),
+                  profilePictureUrl),
             ),
             SizedBox(
               width: 20,

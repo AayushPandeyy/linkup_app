@@ -49,7 +49,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .child(filePath)
           .putFile(selectedImage!);
 
-      // Show loading indicator while uploading
 
       // Await the completion of the upload
       TaskSnapshot snapshot = await uploadTask;
@@ -174,7 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 backgroundImage: selectedImage == null
                                     ? NetworkImage(
                                         userData["profilePicture"] ??
-                                            "https://via.placeholder.com/150", // Replace with actual profile picture URL
+                                            "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg", // Replace with actual profile picture URL
                                       )
                                     : FileImage(selectedImage!)),
                           ),
