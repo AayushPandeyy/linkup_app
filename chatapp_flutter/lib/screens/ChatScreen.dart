@@ -32,17 +32,17 @@ class _ChatScreenState extends State<ChatScreen> {
   final chatService = ChatService();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final User currUser = FirebaseAuth.instance.currentUser!;
+
   void sendMessage() async {
     if (_controller.text.isNotEmpty) {
       chatService.sendMessage(widget.receiverId, _controller.text);
 
       _controller.text = "";
-
-      scrollDown();
+      scrollToBottom();
     }
   }
 
-  void markMessageAsSeen(String chatId) async {
+  void markMessagesAsSeen(String chatId) async {
     final messageSnapshot = await FirebaseFirestore.instance
         .collection("chat_rooms")
         .doc(chatId)
@@ -56,25 +56,30 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   final ScrollController scrollController = ScrollController();
+  final senderId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
     super.initState();
+    final chatroomId = [
+      widget.receiverId,
+      senderId,
+    ]..sort();
+    markMessagesAsSeen(chatroomId.join("_"));
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final senderId = FirebaseAuth.instance.currentUser!.uid;
-      final chatroomId = [
-        widget.receiverId,
-        senderId,
-      ]..sort();
-      markMessageAsSeen(chatroomId.join("_"));
-    });
-    myFocus.addListener(() {
-      if (myFocus.hasFocus) {
-        Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        // User has scrolled to the bottom, you might want to fetch more messages or handle this state
       }
     });
-    Future.delayed(const Duration(milliseconds: 700), () => scrollDown());
+
+    myFocus.addListener(() {
+      if (myFocus.hasFocus) {
+        Future.delayed(
+            const Duration(milliseconds: 700), () => scrollToBottom());
+      }
+    });
   }
 
   @override
@@ -85,8 +90,14 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void scrollDown() async {
-    scrollController.jumpTo(scrollController.position.maxScrollExtent + 100);
+  void scrollToBottom() {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent + 200,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   @override
@@ -124,24 +135,33 @@ class _ChatScreenState extends State<ChatScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                  child: StreamBuilder(
-                      stream:
-                          chatService.getMessages(senderId, widget.receiverId),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        return ListView(
-                          controller: scrollController,
-                          children: snapshot.data!.docs
-                              .map((doc) => DisplayMessageWidget(doc))
-                              .toList(),
+                child: StreamBuilder(
+                    stream:
+                        chatService.getMessages(senderId, widget.receiverId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
                         );
-                      })),
+                      }
+
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        final chatroomId = [
+                          widget.receiverId,
+                          senderId,
+                        ]..sort();
+                        markMessagesAsSeen(chatroomId.join("_"));
+                        scrollToBottom();
+                      });
+
+                      return ListView(
+                        controller: scrollController,
+                        children: snapshot.data!.docs
+                            .map((doc) => DisplayMessageWidget(doc))
+                            .toList(),
+                      );
+                    }),
+              ),
               Row(
                 children: [
                   Expanded(
@@ -162,7 +182,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   IconButton(
                     icon: Icon(Icons.send, color: Colors.red),
                     onPressed: () {
-                      // Handle sending message
                       sendMessage();
                     },
                   ),
@@ -189,9 +208,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Colors.green,
                       direction: TextDirection.rtl,
                       message: data['message']),
-                  SizedBox(
-                    width: 2,
-                  ),
+                  SizedBox(width: 2),
                   Align(
                       alignment: Alignment.centerRight,
                       child: Icon(
@@ -222,9 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   foregroundImage: NetworkImage(widget.profilePictureUrl),
                 ),
               ),
-              SizedBox(
-                width: 5,
-              ),
+              SizedBox(width: 5),
               ChatDialog(
                   isSentByMe: false,
                   color: Colors.grey,

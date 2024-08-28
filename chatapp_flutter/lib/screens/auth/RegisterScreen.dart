@@ -23,7 +23,10 @@ void signUp(BuildContext context) async {
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const MainPage()));
   } catch (err) {
-    print(err);
+    showDialog(
+        context: context,
+        builder: (context) =>
+            Container(child: AlertDialog(content: Text("Error : $err"))));
   }
 }
 
