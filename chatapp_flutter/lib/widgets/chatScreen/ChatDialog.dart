@@ -28,7 +28,7 @@ class _ChatDialogState extends State<ChatDialog> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: widget.isSentByMe ? Colors.blueAccent : Colors.grey[300],
+          color: widget.isSentByMe ? widget.color : Colors.grey[300],
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(widget.isSentByMe ? 16 : 0),
             topRight: Radius.circular(widget.isSentByMe ? 0 : 16),
@@ -52,29 +52,5 @@ class _ChatDialogState extends State<ChatDialog> {
         ),
       ),
     ]);
-    // return Padding(
-    //   padding: const EdgeInsets.all(1.0),
-    //   child: Row(
-    //     textDirection: widget.direction,
-    //     children: [
-    //       Container(
-    //         // width: MediaQuery.sizeOf(context).width * 0.4,
-    //         constraints: BoxConstraints(
-    //             maxWidth: MediaQuery.sizeOf(context).width * 0.4),
-    //         decoration: BoxDecoration(
-    //             color: widget.color,
-    //             border: Border.all(color: widget.color),
-    //             borderRadius: BorderRadius.circular(10)),
-    //         child: Padding(
-    //           padding: const EdgeInsets.all(8.0),
-    //           child: Text(
-    //             widget.message,
-    //             style: TextStyle(fontFamily: "Gabarito", fontSize: 15),
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 }

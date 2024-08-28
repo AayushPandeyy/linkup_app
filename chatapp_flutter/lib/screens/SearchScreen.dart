@@ -2,6 +2,7 @@ import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:chatapp_flutter/widgets/common/CustomTextField.dart';
 import 'package:chatapp_flutter/widgets/searchScreen/SearchBox.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchController = TextEditingController();
 
   String? query = "";
+  final User currUser = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     return Center(child: CircularProgressIndicator());
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty ) {
                     return Center(
                         child: Text("No users found",
                             style: TextStyle(color: Colors.white)));
@@ -59,6 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChatScreen(
+                                        profilePictureUrl: data["profilePicture"] ?? "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
                                         receiverUsername: data["username"],
                                         receiverEmail: data["email"],
                                         receiverId: data["uid"],

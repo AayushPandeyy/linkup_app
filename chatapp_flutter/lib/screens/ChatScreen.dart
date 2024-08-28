@@ -10,11 +10,13 @@ class ChatScreen extends StatefulWidget {
   final String receiverUsername;
   final String receiverEmail;
   final String receiverId;
+  final String profilePictureUrl;
   const ChatScreen(
       {super.key,
       required this.receiverUsername,
       required this.receiverEmail,
-      required this.receiverId});
+      required this.receiverId,
+      required this.profilePictureUrl});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -147,10 +149,21 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.green,
             direction: TextDirection.rtl,
             message: data['message'])
-        : ChatDialog(
-            isSentByMe: false,
-            color: Colors.grey,
-            direction: TextDirection.ltr,
-            message: data['message']);
+        : Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                foregroundImage: NetworkImage(widget.profilePictureUrl),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              ChatDialog(
+                  isSentByMe: false,
+                  color: Colors.grey,
+                  direction: TextDirection.ltr,
+                  message: data['message']),
+            ],
+          );
   }
 }

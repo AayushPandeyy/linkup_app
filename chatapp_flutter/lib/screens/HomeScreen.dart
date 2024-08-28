@@ -74,9 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           String latestMessage = "Start a conversation";
+          bool isSentByYou = false;
           if (snapshot.hasData && snapshot.data != null) {
             Map<String, dynamic>? messageData = snapshot.data!.data();
             if (messageData != null && messageData.containsKey('message')) {
+              if (messageData["senderId"] == currUser.uid) {
+                isSentByYou = true;
+              }
               latestMessage = messageData['message'];
 
               // Display the latest message
@@ -89,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ChatScreen(
+                      profilePictureUrl: data["profilePicture"] ??
+                          "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
                       receiverUsername: data["username"],
                       receiverEmail: data["email"],
                       receiverId: data["uid"],
@@ -100,8 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 profilePictureUrl: data["profilePicture"] ??
                     "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
                 username: data["username"],
-                latestMessage:
-                    latestMessage, // Pass the latest message to the ChatCard
+                latestMessage: isSentByYou
+                    ? "You: $latestMessage"
+                    : latestMessage, // Pass the latest message to the ChatCard
               ),
             );
           } else {
