@@ -105,6 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final senderId = FirebaseAuth.instance.currentUser!.uid;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xffF2F3F4),
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.black,
@@ -205,7 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   ChatDialog(
                       isSentByMe: true,
-                      color: Colors.green,
+                      color: Color(0xff34495E),
                       direction: TextDirection.rtl,
                       message: data['message']),
                   SizedBox(width: 2),
@@ -220,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
               )
             : ChatDialog(
                 isSentByMe: true,
-                color: Colors.green,
+                color: Color(0xff34495E),
                 direction: TextDirection.rtl,
                 message: data['message'])
         : Row(

@@ -22,33 +22,19 @@ class Firestoreservice {
     });
   }
 
-  Future<void> updateUserEmail(String newEmail) async {
-    User? user = FirebaseAuth.instance.currentUser;
 
-    if (user != null) {
-      try {
-        await user.updateEmail(newEmail);
-        await user.reload(); // Reload the user to reflect changes
-        user = FirebaseAuth.instance.currentUser; // Get updated user
-
-        print("Email updated successfully");
-      } on FirebaseAuthException catch (e) {
-        print("Failed to update email: ${e.message}");
-      }
-    }
-  }
-
-  Future<void> updateUserDetails(String username, email, bio, phone) async {
+  Future<void> updateUserDetails(String username, email, bio, phone,BuildContext context) async {
     try {
       DocumentReference userDoc =
           firestore.collection("Users").doc(currUser.uid);
       await userDoc.update(
           {"username": username, "email": email, "bio": bio, "phone": phone});
-      await updateUserEmail(email);
 
-      print("Updated");
     } catch (err) {
-      print("Error : $err");
+      showDialog(
+        context: context,
+        builder: (context) =>
+            Container(child: AlertDialog(content: Text("Error : $err"))));
     }
   }
 

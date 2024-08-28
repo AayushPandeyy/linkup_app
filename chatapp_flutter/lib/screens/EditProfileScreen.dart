@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chatapp_flutter/screens/ProfileScreen.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
+import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -41,6 +42,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> uploadProfilePicture() async {
+    if (selectedImage == null) {
+      return;
+    }
     try {
       // Create a reference to the Firebase Storage location
       String filePath = 'profile_pictures/${currUser.uid}.jpg';
@@ -48,7 +52,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .ref()
           .child(filePath)
           .putFile(selectedImage!);
-
 
       // Await the completion of the upload
       TaskSnapshot snapshot = await uploadTask;
@@ -103,8 +106,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Please fill email and username")));
         }
-        await firestoreService.updateUserDetails(usernameController.text,
-            emailController.text, bioController.text, phoneController.text);
+        await firestoreService.updateUserDetails(
+            usernameController.text,
+            emailController.text,
+            bioController.text,
+            phoneController.text,
+            context);
         await uploadProfilePicture();
         Navigator.pop(context);
       } catch (err) {
@@ -154,7 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       alignment: Alignment.center,
                       children: [
                         Container(
-                          height: 200,
+                          height: 210,
                           decoration: const BoxDecoration(
                             color: Color.fromARGB(255, 225, 231, 225),
                             borderRadius: BorderRadius.only(
@@ -163,36 +170,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                         ),
-                        Positioned(
-                          top: 100,
+                        CircleAvatar(
+                          radius: 100,
+                          backgroundColor: Colors.white,
                           child: CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Colors.white,
-                            child: CircleAvatar(
-                                radius: 55,
-                                backgroundImage: selectedImage == null
-                                    ? NetworkImage(
-                                        userData["profilePicture"] ??
-                                            "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg", // Replace with actual profile picture URL
-                                      )
-                                    : FileImage(selectedImage!)),
-                          ),
-                        ),
-                        Positioned(
-                          top: 160,
-                          right: MediaQuery.of(context).size.width / 2 - 40,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.black,
-                              size: 30,
-                            ),
-                            onPressed: pickImage,
-                          ),
+                              radius: 95,
+                              backgroundImage: selectedImage == null
+                                  ? NetworkImage(
+                                      userData["profilePicture"] ??
+                                          "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg", // Replace with actual profile picture URL
+                                    )
+                                  : FileImage(selectedImage!)),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 20),
+                    CustomButton(
+                        text: "Choose a profile picture",
+                        onPress: () {
+                          pickImage();
+                        }),
+                    const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

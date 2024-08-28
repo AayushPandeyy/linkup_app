@@ -71,7 +71,22 @@ class _HomeScreenState extends State<HomeScreen> {
         stream: firestoreService.getLatestMessageByChatroomId(chatRoomId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: Column(
+              children: [
+                Container(
+                  width: MediaQuery.sizeOf(context).width * 0.9,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color.fromARGB(255, 208, 205, 205),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                )
+              ],
+            ));
           }
 
           String latestMessage = "Start a conversation";
