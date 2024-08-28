@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp_flutter/widgets/chatScreen/ChatDialog.dart';
+import 'package:flutter/scheduler.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverUsername;
@@ -30,6 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final chatService = ChatService();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final User currUser = FirebaseAuth.instance.currentUser!;
   void sendMessage() async {
     if (_controller.text.isNotEmpty) {
       chatService.sendMessage(widget.receiverId, _controller.text);
@@ -40,12 +42,33 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void markMessageAsSeen(String chatId) async {
+    final messageSnapshot = await FirebaseFirestore.instance
+        .collection("chat_rooms")
+        .doc(chatId)
+        .collection("messages")
+        .where("seen", isEqualTo: false)
+        .where("receiverId", isEqualTo: currUser.uid)
+        .get();
+    for (var doc in messageSnapshot.docs) {
+      await doc.reference.update({"seen": true});
+    }
+  }
+
   final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final senderId = FirebaseAuth.instance.currentUser!.uid;
+      final chatroomId = [
+        widget.receiverId,
+        senderId,
+      ]..sort();
+      markMessageAsSeen(chatroomId.join("_"));
+    });
     myFocus.addListener(() {
       if (myFocus.hasFocus) {
         Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
@@ -154,13 +177,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget DisplayMessageWidget(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    bool isSeen = data["seen"];
 
     return data['senderId'] == auth.currentUser!.uid
-        ? ChatDialog(
-            isSentByMe: true,
-            color: Colors.green,
-            direction: TextDirection.rtl,
-            message: data['message'])
+        ? isSeen
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ChatDialog(
+                      isSentByMe: true,
+                      color: Colors.green,
+                      direction: TextDirection.rtl,
+                      message: data['message']),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Icons.check,
+                        size: 20,
+                        color: Colors.green,
+                      )),
+                ],
+              )
+            : ChatDialog(
+                isSentByMe: true,
+                color: Colors.green,
+                direction: TextDirection.rtl,
+                message: data['message'])
         : Row(
             children: [
               GestureDetector(

@@ -28,7 +28,7 @@ class ChatService {
         senderEmail: senderEmail!,
         senderId: senderId,
         receiverId: receiverId,
-        timestamp: Timestamp.now());
+        timestamp: Timestamp.now(),seen: false);
 
     List<String> ids = [receiverId, senderId];
     ids.sort();
