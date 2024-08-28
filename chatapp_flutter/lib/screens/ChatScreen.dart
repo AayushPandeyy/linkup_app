@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chatapp_flutter/screens/OtherUserProfile.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,12 +75,23 @@ class _ChatScreenState extends State<ChatScreen> {
           centerTitle: true,
           backgroundColor: Colors.black,
           iconTheme: IconThemeData(color: Colors.white),
-          title: Text(
-            widget.receiverUsername,
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.yellow,
-              fontFamily: "AldotheApache",
+          title: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => OtherUserProfileScreen(
+                            email: widget.receiverEmail,
+                            username: widget.receiverUsername,
+                          )));
+            },
+            child: Text(
+              widget.receiverUsername,
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.yellow,
+                fontFamily: "AldotheApache",
+              ),
             ),
           ),
         ),
@@ -151,9 +163,19 @@ class _ChatScreenState extends State<ChatScreen> {
             message: data['message'])
         : Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                foregroundImage: NetworkImage(widget.profilePictureUrl),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OtherUserProfileScreen(
+                              username: widget.receiverUsername,
+                              email: widget.receiverEmail)));
+                },
+                child: CircleAvatar(
+                  radius: 20,
+                  foregroundImage: NetworkImage(widget.profilePictureUrl),
+                ),
               ),
               SizedBox(
                 width: 5,
