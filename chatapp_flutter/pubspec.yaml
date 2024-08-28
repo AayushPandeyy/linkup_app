@@ -41,6 +41,9 @@ dependencies:
   firebase_core: ^2.24.2
   firebase_auth: ^4.16.0
   cloud_firestore: ^4.14.0
+  firebase_storage:
+  image_picker: ^1.1.2
+  image_picker_android: ^0.8.12+13
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

@@ -51,10 +51,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Container(
                       height: 150,
-                      child: const CircleAvatar(
+                      child:  CircleAvatar(
                         radius: 90,
                         foregroundImage: NetworkImage(
-                            "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg"),
+                            userData["profilePicture"]),
                       ),
                     ),
                     SizedBox(

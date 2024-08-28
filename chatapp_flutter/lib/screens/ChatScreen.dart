@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +21,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final lastKey = GlobalKey();
   final FocusNode myFocus = FocusNode();
   final TextEditingController _controller = TextEditingController();
 
@@ -42,10 +45,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     myFocus.addListener(() {
       if (myFocus.hasFocus) {
-        Future.delayed(const Duration(seconds: 1), () => scrollDown());
+        Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
       }
     });
-    Future.delayed(const Duration(milliseconds: 1000), () => scrollDown());
+    Future.delayed(const Duration(milliseconds: 700), () => scrollDown());
   }
 
   @override
@@ -56,12 +59,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void scrollDown() {
-    if (scrollController.hasClients) {
-      scrollController.jumpTo(
-        scrollController.position.maxScrollExtent,
-      );
-    }
+  void scrollDown() async {
+    scrollController.jumpTo(scrollController.position.maxScrollExtent + 100);
   }
 
   @override

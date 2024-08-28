@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:chatapp_flutter/screens/ProfileScreen.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -20,6 +25,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController phoneController = TextEditingController();
 
   final User currUser = FirebaseAuth.instance.currentUser!;
+
+  final ImagePicker _picker = ImagePicker();
+
+  File? selectedImage;
+
+  Future<void> pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        selectedImage = File(pickedFile.path);
+      });
+      print(selectedImage);
+    }
+  }
+
+  Future<void> uploadProfilePicture() async {
+    try {
+      // Create a reference to the Firebase Storage location
+      String filePath = 'profile_pictures/${currUser.uid}.jpg';
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child(filePath)
+          .putFile(selectedImage!);
+
+      // Show loading indicator while uploading
+
+      // Await the completion of the upload
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Update Firestore with the new profile picture URL
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currUser.uid)
+          .update({'profilePicture': downloadUrl});
+
+      // Show a success message
+    } catch (e) {
+      // Show error message if upload fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload profile picture: $e')),
+      );
+    }
+  }
 
   void showLoadingDialog() {
     showDialog(
@@ -55,6 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
         await firestoreService.updateUserDetails(usernameController.text,
             emailController.text, bioController.text, phoneController.text);
+        await uploadProfilePicture();
         Navigator.pop(context);
       } catch (err) {
       } finally {
@@ -118,11 +170,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             radius: 60,
                             backgroundColor: Colors.white,
                             child: CircleAvatar(
-                              radius: 55,
-                              backgroundImage: NetworkImage(
-                                "https://static.vecteezy.com/system/resources/previews/011/490/381/non_2x/happy-smiling-young-man-avatar-3d-portrait-of-a-man-cartoon-character-people-illustration-isolated-on-white-background-vector.jpg", // Replace with actual profile picture URL
-                              ),
-                            ),
+                                radius: 55,
+                                backgroundImage: selectedImage == null
+                                    ? NetworkImage(
+                                        userData["profilePicture"] ??
+                                            "https://via.placeholder.com/150", // Replace with actual profile picture URL
+                                      )
+                                    : FileImage(selectedImage!)),
                           ),
                         ),
                         Positioned(
@@ -131,12 +185,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: IconButton(
                             icon: const Icon(
                               Icons.camera_alt,
-                              color: Colors.white,
+                              color: Colors.black,
                               size: 30,
                             ),
-                            onPressed: () {
-                              // Implement profile picture change functionality
-                            },
+                            onPressed: pickImage,
                           ),
                         ),
                       ],
