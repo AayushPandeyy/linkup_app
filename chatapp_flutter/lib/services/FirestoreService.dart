@@ -47,4 +47,29 @@ class Firestoreservice {
       print("Error : $err");
     }
   }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>?> getLatestMessageByChatroomId(
+      String chatroomId) {
+    try {
+      // Query to listen to the latest message from the specified chat room
+      return firestore
+          .collection("chat_rooms")
+          .doc(chatroomId)
+          .collection("messages")
+          .orderBy("timestamp", descending: true)
+          .limit(1)
+          .snapshots()
+          .map((snapshot) {
+        // Return the first document if available, otherwise null
+        if (snapshot.docs.isNotEmpty) {
+          return snapshot.docs.first;
+        }
+        return null;
+      });
+    } catch (e) {
+      // Handle any errors that occur during the fetch
+      print("Error fetching latest message: $e");
+      return Stream.value(null);
+    }
+  }
 }

@@ -104,6 +104,18 @@ flutter:
     - family: Rebellion
       fonts:
         - asset: fonts/RebellionSquad-ZpprZ.ttf
+    - family: UbuntuMono
+      fonts:
+        - asset: fonts/UbuntuMono-Regular.ttf
+    - family: ProstoOne
+      fonts:
+        - asset: fonts/ProstoOne-Regular.ttf
+    - family: MarkoOne
+      fonts:
+        - asset: fonts/MarkoOne-Regular.ttf
+    - family: NewAmsterdam
+      fonts:
+        - asset: fonts/NewAmsterdam-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

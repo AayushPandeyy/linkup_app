@@ -1,6 +1,8 @@
 import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
+import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:chatapp_flutter/widgets/homeScreen/ChatCard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final User currUser = FirebaseAuth.instance.currentUser!;
+  final firestoreService = Firestoreservice();
 
   @override
   void initState() {
@@ -56,21 +59,54 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget DisplayUserWidget(Map<String, dynamic> data, BuildContext context) {
-    if (data["email"] != currUser.email) {
-      return GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
+    List<String> ids = [currUser.uid, data["uid"]];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+
+    // Fetch the latest message using the chatRoomId
+    Firestoreservice firestoreService = Firestoreservice();
+
+    return StreamBuilder(
+        stream: firestoreService.getLatestMessageByChatroomId(chatRoomId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          String latestMessage = "Start a conversation";
+          if (snapshot.hasData && snapshot.data != null) {
+            Map<String, dynamic>? messageData = snapshot.data!.data();
+            if (messageData != null && messageData.containsKey('message')) {
+              latestMessage =
+                  messageData['message']; 
+
+                  
+                  // Display the latest message
+            }
+          }
+          if (data["email"] != currUser.email) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => ChatScreen(
-                          receiverUsername: data["username"],
-                          receiverEmail: data["email"],
-                          receiverId: data["uid"],
-                        )));
-          },
-          child: ChatCard(username: data["username"]));
-    } else {
-      return Container();
-    }
+                      receiverUsername: data["username"],
+                      receiverEmail: data["email"],
+                      receiverId: data["uid"],
+                    ),
+                  ),
+                );
+              },
+              child: ChatCard(
+                username: data["username"],
+                latestMessage:
+                    latestMessage, // Pass the latest message to the ChatCard
+              ),
+            );
+          } else {
+            return Container();
+          }
+        });
   }
 }
