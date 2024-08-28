@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Firestoreservice {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final User currUser = FirebaseAuth.instance.currentUser!;
 
   Stream<List<Map<String, dynamic>>> getUserDataByEmail(String email) {
     return FirebaseFirestore.instance
@@ -30,6 +31,20 @@ class Firestoreservice {
       } on FirebaseAuthException catch (e) {
         print("Failed to update email: ${e.message}");
       }
+    }
+  }
+
+  Future<void> updateUserDetails(String username, email, bio, phone) async {
+    try {
+      DocumentReference userDoc =
+          firestore.collection("Users").doc(currUser.uid);
+      await userDoc.update(
+          {"username": username, "email": email, "bio": bio, "phone": phone});
+      await updateUserEmail(email);
+
+      print("Updated");
+    } catch (err) {
+      print("Error : $err");
     }
   }
 }

@@ -109,13 +109,16 @@ class _ChatScreenState extends State<ChatScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      focusNode: myFocus,
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: "Type your message...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        focusNode: myFocus,
+                        controller: _controller,
+                        decoration: InputDecoration(
+                          hintText: "Type your message...",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       ),
                     ),

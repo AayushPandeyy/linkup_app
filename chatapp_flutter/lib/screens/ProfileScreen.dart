@@ -15,9 +15,8 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-
 class _ProfileScreenState extends State<ProfileScreen> {
-final User currUser = FirebaseAuth.instance.currentUser!;
+  final User currUser = FirebaseAuth.instance.currentUser!;
   @override
   void initState() {
     super.initState();
@@ -101,7 +100,10 @@ final User currUser = FirebaseAuth.instance.currentUser!;
                       height: 20,
                     ),
                     UserDetailsTile(
-                      value: userData["username"] ?? "Not Set",
+                      value: userData["username"] == null ||
+                              userData["username"] == ""
+                          ? "Not Set"
+                          : userData["username"],
                       field: "Username",
                     ),
                     UserDetailsTile(
@@ -109,11 +111,16 @@ final User currUser = FirebaseAuth.instance.currentUser!;
                       field: "Email",
                     ),
                     UserDetailsTile(
-                      value: userData["bio"] ?? "Not Set",
+                      value: userData["bio"] == null || userData["bio"] == ""
+                          ? "Not Set"
+                          : userData["bio"],
                       field: "Bio",
                     ),
                     UserDetailsTile(
-                      value: userData["phone"] ?? "Not Set",
+                      value:
+                          userData["phone"] == null || userData["phone"] == ""
+                              ? "Not Set"
+                              : userData["phone"],
                       field: "Phone",
                     ),
                     SizedBox(

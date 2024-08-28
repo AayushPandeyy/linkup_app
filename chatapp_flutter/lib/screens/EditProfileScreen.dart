@@ -3,15 +3,68 @@ import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  bool isLoading = false;
+
   final TextEditingController usernameController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController bioController = TextEditingController();
+
   final TextEditingController phoneController = TextEditingController();
+
   final User currUser = FirebaseAuth.instance.currentUser!;
+
+  void showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevents dialog from being closed manually
+      builder: (context) => PopScope(
+        onPopInvoked: (bool) => false, // Prevents back navigation
+        child: AlertDialog(
+          content: Row(
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Updating Your Details. Please Wait."),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final firestoreService = Firestoreservice();
+    void updateData() async {
+      showLoadingDialog();
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        if (usernameController.text.isEmpty || emailController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Please fill email and username")));
+        }
+        await firestoreService.updateUserDetails(usernameController.text,
+            emailController.text, bioController.text, phoneController.text);
+        Navigator.pop(context);
+      } catch (err) {
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.pop(context);
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -100,6 +153,7 @@ class EditProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           _buildTextField(
+                            disabled: true,
                             label: 'Email',
                             controller: emailController,
                             icon: Icons.email,
@@ -123,7 +177,7 @@ class EditProfileScreen extends StatelessWidget {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  // Implement save functionality
+                                  updateData();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,
@@ -142,6 +196,7 @@ class EditProfileScreen extends StatelessWidget {
                               OutlinedButton(
                                 onPressed: () {
                                   // Implement cancel functionality
+                                  Navigator.pop(context);
                                 },
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
@@ -172,12 +227,14 @@ class EditProfileScreen extends StatelessWidget {
   }
 
   Widget _buildTextField({
+    bool? disabled,
     required String label,
     required TextEditingController controller,
     required IconData icon,
     int maxLines = 1,
   }) {
     return TextField(
+      readOnly: disabled == null ? false : disabled,
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
