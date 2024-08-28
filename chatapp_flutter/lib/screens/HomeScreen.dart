@@ -1,3 +1,4 @@
+import 'package:chatapp_flutter/models/Message.dart';
 import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
@@ -75,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           String latestMessage = "Start a conversation";
           bool isSentByYou = false;
+          bool hasChatted = true;
           if (snapshot.hasData && snapshot.data != null) {
             Map<String, dynamic>? messageData = snapshot.data!.data();
             if (messageData != null && messageData.containsKey('message')) {
@@ -85,32 +87,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Display the latest message
             }
+          } else if (snapshot.data == null) {
+            hasChatted = false;
           }
           if (data["email"] != currUser.email) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatScreen(
+            return hasChatted
+                ? GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            profilePictureUrl: data["profilePicture"] ??
+                                "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
+                            receiverUsername: data["username"],
+                            receiverEmail: data["email"],
+                            receiverId: data["uid"],
+                          ),
+                        ),
+                      );
+                    },
+                    child: ChatCard(
                       profilePictureUrl: data["profilePicture"] ??
                           "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
-                      receiverUsername: data["username"],
-                      receiverEmail: data["email"],
-                      receiverId: data["uid"],
+                      username: data["username"],
+                      latestMessage: isSentByYou
+                          ? "You: $latestMessage"
+                          : latestMessage, // Pass the latest message to the ChatCard
                     ),
-                  ),
-                );
-              },
-              child: ChatCard(
-                profilePictureUrl: data["profilePicture"] ??
-                    "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
-                username: data["username"],
-                latestMessage: isSentByYou
-                    ? "You: $latestMessage"
-                    : latestMessage, // Pass the latest message to the ChatCard
-              ),
-            );
+                  )
+                : Container();
           } else {
             return Container();
           }
