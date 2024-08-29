@@ -316,22 +316,12 @@ class _ChatScreenState extends State<ChatScreen> {
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  data["type"] == "image"
-                      ? Container(
-                          height: 100,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image(
-                              image: NetworkImage(data['message']),
-                            ),
-                          ),
-                        )
-                      : ChatDialog(
-                          type: data["type"],
-                          isSentByMe: true,
-                          color: Color(0xff34495E),
-                          direction: TextDirection.rtl,
-                          message: data['message']),
+                  ChatDialog(
+                      type: data["type"],
+                      isSentByMe: true,
+                      color: Color(0xff34495E),
+                      direction: TextDirection.rtl,
+                      message: data['message']),
                   SizedBox(width: 2),
                   Align(
                       alignment: Alignment.centerRight,
