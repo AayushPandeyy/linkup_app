@@ -98,7 +98,14 @@ class _HomeScreenState extends State<HomeScreen> {
               if (messageData["senderId"] == currUser.uid) {
                 isSentByYou = true;
               }
-              latestMessage = messageData['message'];
+              if (messageData["type"] == "text") {
+                latestMessage = messageData['message'];
+              } else if (messageData["type"] == "image" &&
+                  messageData["senderId"] == currUser.uid) {
+                latestMessage = "You sent a photo";
+              } else {
+                latestMessage = "Sent a photo";
+              }
 
               // Display the latest message
             }
