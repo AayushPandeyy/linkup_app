@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:chatapp_flutter/screens/OtherUserProfile.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
+import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp_flutter/widgets/chatScreen/ChatDialog.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverUsername;
@@ -33,9 +37,79 @@ class _ChatScreenState extends State<ChatScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final User currUser = FirebaseAuth.instance.currentUser!;
 
-  void sendMessage() async {
-    if (_controller.text.isNotEmpty) {
-      chatService.sendMessage(widget.receiverId, _controller.text);
+  final ImagePicker _picker = ImagePicker();
+
+  File? selectedImage;
+
+  Future<void> pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        selectedImage = File(pickedFile.path);
+      });
+      print(selectedImage);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            CustomButton(
+                text: "Send",
+                onPress: () async {
+                  await uploadImageMessage();
+                  Navigator.pop(context);
+                }),
+            CustomButton(
+                text: "Cancel", onPress: () => {Navigator.pop(context)}),
+          ],
+          content: Container(
+            height: 200,
+            child: Image(image: FileImage(selectedImage!)),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> uploadImageMessage() async {
+    List<String> ids = [widget.receiverId, currUser.uid]..sort();
+    String joinedId = ids.join("_");
+    String finalId = joinedId + Timestamp.now().toString();
+    if (selectedImage == null) {
+      return;
+    }
+    try {
+      // Create a reference to the Firebase Storage location
+      String filePath = 'messages/${finalId}.jpg';
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child(filePath)
+          .putFile(selectedImage!);
+
+      // Await the completion of the upload
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      print(downloadUrl);
+
+      // Update Firestore with the new profile picture URL
+
+      await sendMessage(downloadUrl, "image");
+
+      print("Uploaded to chat");
+      // Show a success message
+    } catch (e) {
+      // Show error message if upload fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload profile picture: $e')),
+      );
+    }
+  }
+
+  Future<void> sendMessage(String text, String type) async {
+    if (text.isNotEmpty) {
+      await chatService.sendMessage(widget.receiverId, text, type);
 
       _controller.text = "";
       scrollToBottom();
@@ -180,11 +254,21 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.send, color: Colors.red),
-                    onPressed: () {
-                      sendMessage();
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.photo, color: Colors.red),
+                        onPressed: () {
+                          pickImage();
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.send, color: Colors.red),
+                        onPressed: () {
+                          sendMessage(_controller.text, "text");
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -199,16 +283,29 @@ class _ChatScreenState extends State<ChatScreen> {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     bool isSeen = data["seen"];
 
+    print("Type is : ${data["type"] == "image"}");
+
     return data['senderId'] == auth.currentUser!.uid
         ? isSeen
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ChatDialog(
-                      isSentByMe: true,
-                      color: Color(0xff34495E),
-                      direction: TextDirection.rtl,
-                      message: data['message']),
+                  data["type"] == "image"
+                      ? Container(
+                          height: 100,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image(
+                              image: NetworkImage(data['message']),
+                            ),
+                          ),
+                        )
+                      : ChatDialog(
+                          type: data["type"],
+                          isSentByMe: true,
+                          color: Color(0xff34495E),
+                          direction: TextDirection.rtl,
+                          message: data['message']),
                   SizedBox(width: 2),
                   Align(
                       alignment: Alignment.centerRight,
@@ -220,6 +317,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               )
             : ChatDialog(
+                type: data["type"],
                 isSentByMe: true,
                 color: Color(0xff34495E),
                 direction: TextDirection.rtl,
@@ -242,6 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               SizedBox(width: 5),
               ChatDialog(
+                  type: data["type"],
                   isSentByMe: false,
                   color: Colors.grey,
                   direction: TextDirection.ltr,

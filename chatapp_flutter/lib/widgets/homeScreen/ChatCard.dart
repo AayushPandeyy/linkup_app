@@ -5,11 +5,15 @@ class ChatCard extends StatelessWidget {
   final String latestMessage;
   final String profilePictureUrl;
   const ChatCard(
-      {super.key, required this.username, required this.latestMessage, required this.profilePictureUrl});
+      {super.key,
+      required this.username,
+      required this.latestMessage,
+      required this.profilePictureUrl});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       width: 100,
       // height: 80,
       decoration: const BoxDecoration(
@@ -21,10 +25,9 @@ class ChatCard extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: Row(
           children: [
-             CircleAvatar(
+            CircleAvatar(
               radius: 25,
-              foregroundImage: NetworkImage(
-                  profilePictureUrl),
+              foregroundImage: NetworkImage(profilePictureUrl),
             ),
             SizedBox(
               width: 20,
@@ -32,6 +35,7 @@ class ChatCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
+              
               children: [
                 Text(
                   username,

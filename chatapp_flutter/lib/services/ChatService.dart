@@ -18,7 +18,7 @@ class ChatService {
   }
 
   //send message
-  Future<void> sendMessage(String receiverId, message) async {
+  Future<void> sendMessage(String receiverId, message,String type) async {
     final User currUser = auth.currentUser!;
     final senderId = currUser.uid;
     final senderEmail = currUser.email;
@@ -28,7 +28,7 @@ class ChatService {
         senderEmail: senderEmail!,
         senderId: senderId,
         receiverId: receiverId,
-        timestamp: Timestamp.now(),seen: false);
+        timestamp: Timestamp.now(),seen: false,type: type);
 
     List<String> ids = [receiverId, senderId];
     ids.sort();
