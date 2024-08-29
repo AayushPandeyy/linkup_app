@@ -72,7 +72,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(height: 10.0),
                   Text(
-                    'LinkUp',
+                    'LinkUp - With your friends',
                     style: TextStyle(
                       fontFamily: "AldotheApache",
                       color: Colors.yellow,
