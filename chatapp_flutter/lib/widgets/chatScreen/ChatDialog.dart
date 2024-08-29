@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ChatDialog extends StatefulWidget {
@@ -65,9 +66,24 @@ class _ChatDialogState extends State<ChatDialog> {
                       width: MediaQuery.sizeOf(context).width * 0.5,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20)),
-                      child: Image(
-                        image: NetworkImage(widget.message),
-                        fit: BoxFit.contain,
+                      child: Image.network(
+                        widget.message,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child; // Image loaded
+                          }
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          ); // Loading indicator while the image is loading
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            Icon(Icons.error), // Handle image load error
                       )),
                   SizedBox(
                     height: 10,

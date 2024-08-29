@@ -29,6 +29,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  bool isSendingImage = false;
   final lastKey = GlobalKey();
   final FocusNode myFocus = FocusNode();
   final TextEditingController _controller = TextEditingController();
@@ -55,9 +56,26 @@ class _ChatScreenState extends State<ChatScreen> {
             CustomButton(
                 text: "Send",
                 onPress: () async {
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            backgroundColor: Colors.transparent,
+                            content: Container(
+                              color: Colors.transparent,
+                              height: 100,
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ));
                   await uploadImageMessage();
                   Navigator.pop(context);
+                  Future.delayed(const Duration(milliseconds: 500));
+                  Navigator.pop(context);
                 }),
+            SizedBox(
+              height: 5,
+            ),
             CustomButton(
                 text: "Cancel", onPress: () => {Navigator.pop(context)}),
           ],
@@ -71,6 +89,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> uploadImageMessage() async {
+    setState(() {
+      isSendingImage = true;
+    });
+
     List<String> ids = [widget.receiverId, currUser.uid]..sort();
     String joinedId = ids.join("_");
     String finalId = joinedId + Timestamp.now().toString();
@@ -104,6 +126,10 @@ class _ChatScreenState extends State<ChatScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to upload profile picture: $e')),
       );
+    } finally {
+      setState(() {
+        isSendingImage = false;
+      });
     }
   }
 
