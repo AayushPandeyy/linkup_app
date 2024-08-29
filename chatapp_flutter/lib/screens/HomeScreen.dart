@@ -3,6 +3,7 @@ import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:chatapp_flutter/widgets/homeScreen/ChatCard.dart';
+import 'package:chatapp_flutter/widgets/homeScreen/CustomDrawer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final ChatService chatService = ChatService();
     return SafeArea(
         child: Scaffold(
+            drawer: CustomDrawer(),
             appBar: AppBar(
               title: const Text(
                 "LinkUp",

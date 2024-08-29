@@ -22,9 +22,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    Firestoreservice()
-        .changeActivityStatus(true); // Set user as online when the app starts
   }
 
   @override
@@ -51,6 +48,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         break;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
