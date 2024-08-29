@@ -22,19 +22,18 @@ class Firestoreservice {
     });
   }
 
-
-  Future<void> updateUserDetails(String username, email, bio, phone,BuildContext context) async {
+  Future<void> updateUserDetails(
+      String username, email, bio, phone, BuildContext context) async {
     try {
       DocumentReference userDoc =
           firestore.collection("Users").doc(currUser.uid);
       await userDoc.update(
           {"username": username, "email": email, "bio": bio, "phone": phone});
-
     } catch (err) {
       showDialog(
-        context: context,
-        builder: (context) =>
-            Container(child: AlertDialog(content: Text("Error : $err"))));
+          context: context,
+          builder: (context) =>
+              Container(child: AlertDialog(content: Text("Error : $err"))));
     }
   }
 
@@ -62,5 +61,9 @@ class Firestoreservice {
       return Stream.value(null);
     }
   }
-  
+
+  Future<void> changeActivityStatus(bool status) async {
+    await firestore.collection('Users').doc(currUser.uid).update(
+        {'activityStatus': status, 'lastSeen': FieldValue.serverTimestamp()});
+  }
 }

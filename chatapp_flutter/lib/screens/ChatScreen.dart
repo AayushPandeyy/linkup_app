@@ -17,12 +17,14 @@ class ChatScreen extends StatefulWidget {
   final String receiverEmail;
   final String receiverId;
   final String profilePictureUrl;
+  final bool isActive;
   const ChatScreen(
       {super.key,
       required this.receiverUsername,
       required this.receiverEmail,
       required this.receiverId,
-      required this.profilePictureUrl});
+      required this.profilePictureUrl,
+      required this.isActive});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -220,13 +222,25 @@ class _ChatScreenState extends State<ChatScreen> {
                             username: widget.receiverUsername,
                           )));
             },
-            child: Text(
-              widget.receiverUsername,
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.yellow,
-                fontFamily: "AldotheApache",
-              ),
+            child: Column(
+              children: [
+                Text(
+                  widget.receiverUsername,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.yellow,
+                    fontFamily: "AldotheApache",
+                  ),
+                ),
+                Text(
+                  widget.isActive ? "Active Now" : "Offline",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: widget.isActive ? Colors.green : Colors.grey,
+                    fontFamily: "AldotheApache",
+                  ),
+                ),
+              ],
             ),
           ),
         ),

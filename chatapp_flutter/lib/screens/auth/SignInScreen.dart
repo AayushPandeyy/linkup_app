@@ -1,6 +1,7 @@
 import 'package:chatapp_flutter/screens/MainPage.dart';
 import 'package:chatapp_flutter/screens/auth/RegisterScreen.dart';
 import 'package:chatapp_flutter/services/AuthService.dart';
+import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ void login(BuildContext context) async {
     final authService = AuthService();
 
     await authService.signIn(_emailController.text, _passwordController.text);
+    await Firestoreservice().changeActivityStatus(true);
     reset();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const MainPage()));
