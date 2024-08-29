@@ -18,13 +18,15 @@ class ChatScreen extends StatefulWidget {
   final String receiverId;
   final String profilePictureUrl;
   final bool isActive;
+  final Timestamp lastSeen;
   const ChatScreen(
       {super.key,
       required this.receiverUsername,
       required this.receiverEmail,
       required this.receiverId,
       required this.profilePictureUrl,
-      required this.isActive});
+      required this.isActive,
+      required this.lastSeen});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -43,6 +45,31 @@ class _ChatScreenState extends State<ChatScreen> {
   final ImagePicker _picker = ImagePicker();
 
   File? selectedImage;
+
+  String timeAgo(DateTime pastDate) {
+    final now = DateTime.now();
+    final difference = now.difference(pastDate);
+
+    if (difference.inDays > 0) {
+      if (difference.inDays == 1) {
+        return 'Yesterday';
+      } else if (difference.inDays < 30) {
+        return '${difference.inDays} days ago';
+      } else if (difference.inDays < 365) {
+        return '${(difference.inDays / 30).floor()} months ago';
+      } else {
+        return '${(difference.inDays / 365).floor()} years ago';
+      }
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minutes ago';
+    } else if (difference.inSeconds > 0) {
+      return '${difference.inSeconds} seconds ago';
+    } else {
+      return 'Just now';
+    }
+  }
 
   Future<void> pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -233,11 +260,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 Text(
-                  widget.isActive ? "Active Now" : "Offline",
+                  widget.isActive
+                      ? "Active Now"
+                      : "Last seen ${timeAgo(widget.lastSeen.toDate())}",
                   style: TextStyle(
                     fontSize: 13,
                     color: widget.isActive ? Colors.green : Colors.grey,
-                    fontFamily: "AldotheApache",
+                    fontFamily: "MarkoOne",
                   ),
                 ),
               ],

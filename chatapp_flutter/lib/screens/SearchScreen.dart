@@ -2,6 +2,7 @@ import 'package:chatapp_flutter/screens/ChatScreen.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
 import 'package:chatapp_flutter/widgets/common/CustomTextField.dart';
 import 'package:chatapp_flutter/widgets/searchScreen/SearchBox.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -62,6 +63,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ChatScreen(
+                                          lastSeen: data["lastSeen"],
                                           isActive: data["activityStatus"],
                                           profilePictureUrl: data[
                                                   "profilePicture"] ??

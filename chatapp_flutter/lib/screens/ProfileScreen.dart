@@ -133,6 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         final AuthService authService = AuthService();
                         try {
                           // Perform sign out
+                          await Firestoreservice().changeActivityStatus(false);
+
                           await authService.logout();
 
                           // Navigate to SignInScreen and replace the current screen
