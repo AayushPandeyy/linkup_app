@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chatapp_flutter/screens/OtherUserProfile.dart';
 import 'package:chatapp_flutter/services/ChatService.dart';
+import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,6 +42,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final chatService = ChatService();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final User currUser = FirebaseAuth.instance.currentUser!;
+
+  final firestoreService = Firestoreservice();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -236,6 +239,14 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Scaffold(
         backgroundColor: Color(0xffF2F3F4),
         appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await firestoreService.addBlockedUser(widget.receiverId);
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.block))
+          ],
           centerTitle: true,
           backgroundColor: Colors.black,
           iconTheme: IconThemeData(color: Colors.white),

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:chatapp_flutter/screens/ProfileScreen.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
 import 'package:chatapp_flutter/widgets/common/CustomButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

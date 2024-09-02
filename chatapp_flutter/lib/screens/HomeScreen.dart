@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: EdgeInsets.only(top: 1),
                 height: double.maxFinite,
                 child: StreamBuilder(
-                  stream: chatService.getUsers(),
+                  stream: firestoreService.getAllUsersExceptBlocked(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());

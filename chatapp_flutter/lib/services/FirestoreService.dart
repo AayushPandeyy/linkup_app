@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class Firestoreservice {
@@ -66,4 +65,57 @@ class Firestoreservice {
     await firestore.collection('Users').doc(currUser.uid).update(
         {'activityStatus': status, 'lastSeen': FieldValue.serverTimestamp()});
   }
+
+  Future<void> addBlockedUser(String blockedUid) async {
+    await firestore
+        .collection("Users")
+        .doc(currUser.uid)
+        .collection('BlockedUsers')
+        .doc(blockedUid)
+        .set({});
+  }
+
+  Future<void> removeBlockedUser(String blockedUid) async {
+    await firestore
+        .collection('Users')
+        .doc(currUser.uid)
+        .collection('BlockedUsers')
+        .doc(blockedUid)
+        .delete();
+  }
+
+  Stream<List<Map<String, dynamic>>> getAllUsersExceptBlocked() {
+    return firestore
+        .collection('Users')
+        .doc(currUser.uid)
+        .collection('BlockedUsers')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final blockedUserIds = snapshot.docs.map((doc) => doc.id).toList();
+      final allUsers = await firestore.collection('Users').get();
+      return allUsers.docs
+          .where((doc) =>
+              doc.data()["email"] != currUser.email &&
+              !blockedUserIds.contains(doc.id))
+          .map((doc) => doc.data())
+          .toList();
+    });
+  }
+
+  // Stream<List<Map<String, dynamic>>> getAllBlockedUsers() {
+  //   return firestore
+  //       .collection('Users')
+  //       .doc(currUser.uid)
+  //       .collection('BlockedUsers')
+  //       .snapshots()
+  //       .asyncMap((snapshot) async {
+  //     final blockedUsers = snapshot.docs.map((doc) => doc.id).toList();
+
+  //     final usersSnapshots = await firestore.collection('Users').get();
+  //     return usersSnapshots.docs
+  //         .where((user) => blockedUsers.contains(user.id))
+  //         .map((doc) => doc.data())
+  //         .toList();
+  //   });
+  // }
 }
