@@ -41,10 +41,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => EditProfileScreen()));
           }),
-          // DrawerTile(Icons.block, () {
-          //   Navigator.push(context,
-          //       MaterialPageRoute(builder: (context) => BlockedUsersScreen()));
-          // }),
+          DrawerTile(Icons.block, () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => BlockedUsersScreen()));
+          }),
           DrawerTile(Icons.logout, () async {
             await firestoreService.changeActivityStatus(false);
             await authService.logout();

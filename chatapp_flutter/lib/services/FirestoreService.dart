@@ -102,20 +102,20 @@ class Firestoreservice {
     });
   }
 
-  // Stream<List<Map<String, dynamic>>> getAllBlockedUsers() {
-  //   return firestore
-  //       .collection('Users')
-  //       .doc(currUser.uid)
-  //       .collection('BlockedUsers')
-  //       .snapshots()
-  //       .asyncMap((snapshot) async {
-  //     final blockedUsers = snapshot.docs.map((doc) => doc.id).toList();
+  Stream<List<Map<String, dynamic>>> getAllBlockedUsers() {
+    return firestore
+        .collection('Users')
+        .doc(currUser.uid)
+        .collection('BlockedUsers')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final blockedUsers = snapshot.docs.map((doc) => doc.id).toList();
 
-  //     final usersSnapshots = await firestore.collection('Users').get();
-  //     return usersSnapshots.docs
-  //         .where((user) => blockedUsers.contains(user.id))
-  //         .map((doc) => doc.data())
-  //         .toList();
-  //   });
-  // }
+      final usersSnapshots = await firestore.collection('Users').get();
+      return usersSnapshots.docs
+          .where((user) => blockedUsers.contains(user.id))
+          .map((doc) => doc.data())
+          .toList();
+    });
+  }
 }
