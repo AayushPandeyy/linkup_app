@@ -118,4 +118,10 @@ class Firestoreservice {
           .toList();
     });
   }
+  Future<void> addUserToDatabase(String uid, email, username) async {
+    await firestore
+        .collection("Users")
+        .doc(uid)
+        .set({'uid': uid, "email": email, "username": username});
+  }
 }

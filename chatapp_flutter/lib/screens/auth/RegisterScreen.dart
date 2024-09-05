@@ -1,5 +1,8 @@
 import 'package:chatapp_flutter/screens/MainPage.dart';
+import 'package:chatapp_flutter/screens/auth/SignInScreen.dart';
 import 'package:chatapp_flutter/services/AuthService.dart';
+import 'package:chatapp_flutter/utilities/DialogBox.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,20 +16,52 @@ class RegisterScreen extends StatefulWidget {
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
 final TextEditingController usernameController = TextEditingController();
+final dialogBox = DialogBox();
 
-void signUp(BuildContext context) async {
+Future<void> signUp(BuildContext context) async {
+  final AuthService authService = AuthService();
   try {
-    final AuthService authService = AuthService();
+    dialogBox.showLoadingDialog(context, "Registering User"); // Debug print
     await authService.signUp(
         emailController.text, passwordController.text, usernameController.text);
-    reset();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const MainPage()));
-  } catch (err) {
+
     showDialog(
-        context: context,
-        builder: (context) =>
-            Container(child: AlertDialog(content: Text("Error : $err"))));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Verification Email Sent"),
+        content: Text(
+            "A verification email has been sent. Please verify your email and login to your account."),
+        actions: [
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context),
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const SignInScreen()))
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  } catch (err) {
+    print(err.runtimeType);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text("Error: $err"),
+        actions: <Widget>[
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+    throw Exception(err);
   }
 }
 

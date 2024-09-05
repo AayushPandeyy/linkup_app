@@ -2,6 +2,8 @@ import 'package:chatapp_flutter/screens/MainPage.dart';
 import 'package:chatapp_flutter/screens/auth/RegisterScreen.dart';
 import 'package:chatapp_flutter/services/AuthService.dart';
 import 'package:chatapp_flutter/services/FirestoreService.dart';
+import 'package:chatapp_flutter/utilities/DialogBox.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -16,19 +18,61 @@ class SignInScreen extends StatefulWidget {
 final TextEditingController _emailController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 
-void login(BuildContext context) async {
-  try {
-    final authService = AuthService();
+  void login(BuildContext context) async {
+    final AuthService authService = AuthService();
 
-    await authService.signIn(_emailController.text, _passwordController.text);
-    await Firestoreservice().changeActivityStatus(true);
-    reset();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const MainPage()));
-  } catch (e) {
-    print(e);
+    try {
+      DialogBox().showLoadingDialog(context, "Signing In");
+
+      UserCredential user = await authService.signIn(
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      if (!user.user!.emailVerified) {
+        Navigator.pop(context);
+        await authService.logout();
+        DialogBox().showAlertDialog(context, "Email Verification Required",
+            "Your email has not yet been verified. Please verify your email and try again.");
+      } else {
+        Navigator.pop(context);
+        reset();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password. Please try again.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Invalid email address format.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This user account has been disabled.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Too many login attempts. Please try again later.';
+          break;
+        default:
+          errorMessage = 'An unexpected error occurred. Please try again.';
+      }
+
+      DialogBox().showAlertDialog(context, "Login Failed", errorMessage);
+    } catch (e) {
+      print(e);
+      Navigator.pop(context);
+      DialogBox().showAlertDialog(context, "Login Failed",
+          "An unknown error occurred.Please try again");
+    }
   }
-}
 
 void reset() {
   _emailController.text = "";
