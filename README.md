@@ -27,7 +27,6 @@
 - **🔐 Register/Login**: Sign up or log in with your email and password.
 - **💬 Start Chatting**: Choose a user to start a conversation or create a new chat room.
 - **🖼️ Share Images**: Click the image icon to upload and share an image from your gallery or camera.
-- **🔔 Receive Notifications**: Stay informed with push notifications for new messages.
 
 ## 🤝 Contributing
 
